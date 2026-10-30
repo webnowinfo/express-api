@@ -1,0 +1,262 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        userName:
+          type: string
+        role:
+          type: string
+          enum: [USER, LIBRARIAN, ADMIN]
+          description: Derived from isAdmin / isLibrarian
+        isAdmin:
+          type: boolean
+        isLibrarian:
+          type: integer
+        departID:
+          type: integer
+        posID:
+          type: integer
+        status:
+          type: string
+          enum: [pending, approved, suspended, retired]
+        phoneNum1:
+          type: string
+        phoneNum2:
+          type: string
+        birthday:
+          type: string
+          format: date-time
+        regDate:
+          type: string
+          format: date-time
+        lastAction:
+          type: string
+          format: date-time
+        isLogin:
+          type: boolean
+      example:
+        id: 1
+        userName: hong
+        role: USER
+        isAdmin: false
+        isLibrarian: 0
+        departID: 3
+        posID: 2
+        status: approved
+        phoneNum1: '0101234567'
+        phoneNum2: ''
+        birthday: 1990-01-01T00:00:00.000Z
+        regDate: 2026-10-20T09:00:00.000Z
+        lastAction: 2026-10-20T09:00:00.000Z
+        isLogin: true
+
+    UserProfileInput:
+      type: object
+      required:
+        - userName
+        - password
+        - departID
+        - posID
+        - birthday
+      properties:
+        userName:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: must be unique
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: At least one number and one letter
+        departID:
+          type: integer
+          description: basic_department id
+        posID:
+          type: integer
+          description: basic_position id
+        birthday:
+          type: string
+          format: date
+        cNum:
+          type: string
+          maxLength: 20
+          description: Citizen ID number
+        phoneNum1:
+          type: string
+          maxLength: 12
+        phoneNum2:
+          type: string
+          maxLength: 12
+      example:
+        userName: hong
+        password: password1
+        departID: 3
+        posID: 2
+        birthday: '1990-01-01'
+        phoneNum1: '0101234567'
+
+    UserPrivilegedInput:
+      type: object
+      description: Only users with the manageUsers right (admins) can set these
+      properties:
+        isAdmin:
+          type: boolean
+        isLibrarian:
+          type: boolean
+        status:
+          type: string
+          enum: [pending, approved, suspended, retired]
+
+    UserPermissions:
+      type: object
+      properties:
+        userId:
+          type: integer
+        classID:
+          type: string
+          enum: [public, private]
+        forumPermission:
+          type: array
+          items:
+            type: integer
+          description: Private forum permission (IDs)
+        dataPermission:
+          type: array
+          items:
+            type: integer
+          description: Private data permission (IDs)
+        systemPermission:
+          type: array
+          items:
+            type: integer
+          description: System permission (IDs)
+        successPermission:
+          type: array
+          items:
+            type: integer
+        forumPostPermission:
+          type: boolean
+        privatePermission:
+          type: boolean
+        overseasPermission:
+          type: string
+          nullable: true
+          example: user:NULL,admin:NULL
+      example:
+        userId: 1
+        classID: private
+        forumPermission: [1, 5, 12]
+        dataPermission: [3]
+        systemPermission: []
+        successPermission: []
+        forumPostPermission: false
+        privatePermission: false
+        overseasPermission: user:NULL,admin:NULL
+
+    UserPermissionsInput:
+      type: object
+      minProperties: 1
+      properties:
+        classID:
+          type: string
+          enum: [public, private]
+        forumPermission:
+          type: array
+          items:
+            type: integer
+        dataPermission:
+          type: array
+          items:
+            type: integer
+        systemPermission:
+          type: array
+          items:
+            type: integer
+        successPermission:
+          type: array
+          items:
+            type: integer
+        forumPostPermission:
+          type: boolean
+        privatePermission:
+          type: boolean
+        overseasPermission:
+          type: string
+          nullable: true
+          maxLength: 255
+
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+        expires:
+          type: string
+          format: date-time
+      example:
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWJhYzUzNDk1NGI1NDEzOTgwNmMxMTIiLCJpYXQiOjE1ODkyOTg0ODQsImV4cCI6MTU4OTMwMDI4NH0.m1U63blB0MLej_WfB7yC2FTMnCziif9X8yzwDEfJXAg
+        expires: 2020-05-12T16:18:04.793Z
+
+    AuthTokens:
+      type: object
+      properties:
+        access:
+          $ref: '#/components/schemas/Token'
+        refresh:
+          $ref: '#/components/schemas/Token'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+
+  responses:
+    DuplicateUserName:
+      description: User name already taken
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: User name already taken
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 401
+            message: Please authenticate
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 403
+            message: Forbidden
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: Not found
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

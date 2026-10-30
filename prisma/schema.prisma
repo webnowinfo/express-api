@@ -1,0 +1,1428 @@
+// Prisma schema for the kcc_main database (introspected with `prisma db pull`).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model apply_privatedata_info {
+  id          Int                           @id @default(autoincrement())
+  userID      Int
+  data_id     Int
+  status      apply_privatedata_info_status @default(pending)
+  sync_status Boolean                       @default(false)
+  insertTime  DateTime                      @db.DateTime(0)
+  processTime DateTime?                     @db.DateTime(0)
+
+  @@index([data_id], map: "data_id")
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model article_info {
+  id             Int                  @id @default(autoincrement())
+  userID         Int                  @default(2)
+  title          String               @db.VarChar(255)
+  note           String               @db.Text
+  classID        article_info_classID @default(public)
+  categoryID     Int                  @default(0)
+  fileName       String               @db.VarChar(255)
+  fileSize       Int                  @default(0)
+  insertTime     DateTime             @db.DateTime(0)
+  processTime    DateTime?            @db.DateTime(0)
+  viewCount      Int                  @default(0) @db.UnsignedSmallInt
+  answerCount    Int                  @default(0)
+  likeCount      Int                  @default(0) @db.UnsignedSmallInt
+  likerIDs       String               @db.Text
+  unlikeCount    Int                  @default(0) @db.UnsignedSmallInt
+  unlikerIDs     String               @db.Text
+  status         article_info_status  @default(pending)
+  parentID       Int                  @default(0)
+  serialParentID Int                  @default(0)
+  zScore         Float                @default(0)
+  isRecomm       Boolean              @default(false)
+  tagIDs         String               @default("") @db.VarChar(255)
+  tags           String               @default("") @db.VarChar(255)
+  isESstatus     Boolean              @default(false)
+
+  @@index([categoryID], map: "categoryID")
+  @@index([parentID], map: "parentID")
+  @@index([serialParentID], map: "serialParentID")
+  @@index([userID], map: "userID")
+}
+
+model basic_character {
+  id        Int     @id @default(autoincrement())
+  sha512    String? @db.VarChar(255)
+  deletable Boolean @default(false)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_data_category {
+  id           Int                         @id @default(autoincrement())
+  name         String                      @db.VarChar(255)
+  icon         String                      @default("fontello-icon-list-3") @db.VarChar(50)
+  usable       Boolean                     @default(true)
+  classID      basic_data_category_classID
+  treeCode     String                      @db.VarChar(32)
+  privateCount Int
+  publicCount  Int
+  internetFlag Int                         @db.TinyInt
+  CLASS_SYMBOL String                      @db.VarChar(1024)
+  deletable    Boolean                     @default(false)
+
+  @@index([classID], map: "classID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_department {
+  id                Int                      @id @default(autoincrement())
+  name              String                   @db.VarChar(256)
+  treeCode          String                   @db.VarChar(32)
+  usable            Boolean                  @default(true)
+  forumPermission   String                   @db.Text
+  dataPermission    String                   @db.Text
+  successPermission String                   @db.VarChar(255)
+  classID           basic_department_classID
+  posIDs            String                   @db.Text
+  chdepart          String                   @db.Text
+  isStatis          Boolean                  @default(false)
+  isEnableMsg       Int                      @default(1)
+  unitType          Boolean                  @default(false)
+
+  @@index([treeCode], map: "treeCode")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_evaluation_category {
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(255)
+  treeCode String @db.VarChar(32)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_forum_category {
+  id                 Int                          @id @default(autoincrement())
+  name               String                       @db.VarChar(255)
+  icon               String?                      @db.VarChar(255)
+  usable             Boolean                      @default(true)
+  serialForum_usable Boolean                      @default(true)
+  article_usable     Boolean                      @default(true)
+  classID            basic_forum_category_classID @default(public)
+  privateCount       Int
+  publicCount        Int
+  deletable          Boolean                      @default(true)
+  treeCode           String                       @db.VarChar(32)
+
+  @@index([classID], map: "isPublic")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_forum_tag {
+  id          Int                    @id @default(autoincrement())
+  name        String                 @unique(map: "name") @db.VarChar(256)
+  categoryID  Int                    @default(0)
+  insertTime  DateTime               @db.DateTime(0)
+  processTime DateTime?              @db.DateTime(0)
+  status      basic_forum_tag_status @default(pending)
+
+  @@index([categoryID], map: "categoryID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_internet_category {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(255)
+  icon      String @default("fontello-icon-list-3") @db.VarChar(50)
+  treeCode  String @db.VarChar(32)
+  dataCount Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_mods_item {
+  id       Int     @id @default(autoincrement())
+  mKey     String  @db.VarChar(255)
+  mItem    String  @db.VarChar(255)
+  parentID Int
+  isAttr   Boolean @default(false)
+
+  @@index([mKey], map: "mKey")
+  @@index([parentID], map: "parentID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_organization {
+  id        Int     @id @default(autoincrement())
+  name      String  @db.VarChar(256)
+  treeCode  String  @db.VarChar(32)
+  usable    Boolean @default(true)
+  departIDs String  @db.Text
+
+  @@index([treeCode], map: "treeCode")
+}
+
+model basic_politic_category {
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(255)
+  icon     String @db.VarChar(50)
+  isShow   Int    @db.TinyInt
+  treeCode String @db.VarChar(50)
+  sort     Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_position {
+  id       Int                     @id @default(autoincrement())
+  name     String                  @db.VarChar(20)
+  workType basic_position_workType @default(officer)
+  sort     Int
+  jobs     String                  @db.Text
+
+  @@index([workType], map: "workType")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_private_category {
+  id        Int     @id @default(autoincrement())
+  name      String  @db.VarChar(255)
+  icon      String  @default("fontello-icon-list-3") @db.VarChar(50)
+  usable    Boolean @default(true)
+  treeCode  String  @db.VarChar(32)
+  dataCount Int
+}
+
+model basic_slide_image {
+  id       Int     @id @default(autoincrement())
+  fileName String  @db.VarChar(255)
+  sha512   String? @db.VarChar(255)
+  usable   Int     @db.TinyInt
+  sort     Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_success_category {
+  id           Int                            @id @default(autoincrement())
+  name         String                         @db.VarChar(255)
+  icon         String?                        @db.VarChar(255)
+  usable       Boolean                        @default(true)
+  classID      basic_success_category_classID @default(public)
+  privateCount Int
+  publicCount  Int
+  deletable    Boolean                        @default(true)
+  treeCode     String                         @db.VarChar(32)
+
+  @@index([classID], map: "isPublic")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_sys_modules {
+  id         Int                          @id @default(autoincrement())
+  moduleName String                       @db.VarChar(255)
+  moduleType basic_sys_modules_moduleType @default(ucp)
+  modulePath String                       @db.VarChar(512)
+  treeCode   String                       @db.VarChar(16)
+  fontIcon   String?                      @db.VarChar(255)
+  status     basic_sys_modules_status     @default(show)
+
+  @@index([treeCode], map: "treeCode")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_theme {
+  id            Int      @id @default(autoincrement())
+  themeName     String   @db.VarChar(256)
+  isEnable      Boolean  @default(true)
+  themeCode     String?  @db.Char(4)
+  themeKey      String   @db.VarChar(256)
+  showItemCount Int
+  updateDate    DateTime @default(now()) @db.Timestamp(0)
+  isLocked      Boolean  @default(true)
+}
+
+model book_category {
+  id       Int    @id @default(autoincrement())
+  category String @db.VarChar(255)
+  treeCode String @db.VarChar(8)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model book_info {
+  id           Int                @id @default(autoincrement())
+  bookNum      String             @db.VarChar(20)
+  title        String             @db.VarChar(255)
+  comment      String             @db.Text
+  printCompany String             @db.VarChar(50)
+  printYear    Int                @db.UnsignedInt
+  pages        Int
+  categoryID   Int
+  classID      Int                @db.TinyInt
+  langID       book_info_langID   @default(ko)
+  price        String             @db.VarChar(20)
+  saleability  Int                @db.TinyInt
+  insertTime   DateTime           @db.DateTime(0)
+  showFlag     book_info_showFlag @default(show)
+  lender       Int
+  lastlendtime DateTime           @db.Date
+
+  @@index([printYear], map: "publishYear")
+  @@index([title], map: "title")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model book_info_org {
+  id           Int                    @id @default(autoincrement())
+  bookNum      String                 @db.VarChar(20)
+  title        String                 @db.VarChar(255)
+  comment      String                 @db.Text
+  printCompany String                 @db.VarChar(50)
+  printYear    Int                    @db.UnsignedInt
+  pages        Int
+  categoryID   Int
+  langID       book_info_org_langID   @default(ko)
+  price        String                 @db.VarChar(20)
+  saleability  Int                    @db.TinyInt
+  insertTime   DateTime               @db.DateTime(0)
+  showFlag     book_info_org_showFlag @default(show)
+  lender       Int
+
+  @@index([printYear], map: "publishYear")
+  @@index([title], map: "title")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model book_lend_log {
+  id         Int                  @id @default(autoincrement())
+  bookNum    String               @db.VarChar(20)
+  categoryID Int
+  langID     book_lend_log_langID @default(ko)
+  startDate  DateTime             @db.Date
+  endDate    DateTime             @db.Date
+  userID     Int
+  departID   Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cron_access_count {
+  id          BigInt   @id @default(autoincrement())
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+  accessCount Int
+}
+
+model cron_top_keyword {
+  id          Int    @id @default(autoincrement())
+  keyword     String @db.VarChar(50)
+  hrefKeyword String @db.VarChar(50)
+  searchCount Int
+  resultCount Int
+}
+
+model cron_top_user {
+  id          Int                    @id @default(autoincrement())
+  userID      Int
+  departName  String                 @db.VarChar(50)
+  posName     String                 @db.VarChar(50)
+  rankType    cron_top_user_rankType
+  docCount    Int
+  viewCount   Int
+  likeCount   Int
+  characterID Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cron_upload_data_forum {
+  id         BigInt   @id @default(autoincrement())
+  date       DateTime @db.Date
+  departID   Int
+  departName String   @db.VarChar(25)
+  data       Int
+  forum      Int
+  article    Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model data_info {
+  id          Int                 @id @default(autoincrement())
+  title       String              @db.VarChar(255)
+  publisher   String?             @db.VarChar(255)
+  publishYear Int?
+  note        String?             @db.Text
+  cencerID    String?             @db.VarChar(255)
+  author      String?             @db.VarChar(255)
+  pages       Int?
+  classID     data_info_classID?  @default(public)
+  categoryID  Int?
+  fileName    String?             @db.VarChar(255)
+  fileType    data_info_fileType?
+  fileSize    Int?                @default(0)
+  langID      Int?                @default(1) @db.TinyInt
+  sha512      String?             @db.VarChar(255)
+  insertTime  DateTime?           @db.DateTime(0)
+  processTime DateTime?           @db.DateTime(0)
+  likerIDs    String?             @db.Text
+  likeCount   Int?                @default(0)
+  unlikerIDs  String?             @db.Text
+  unlikeCount Int?                @default(0)
+  viewCount   Int?                @default(0)
+  isRecomm    Int?                @default(0) @db.TinyInt
+  status      data_info_status?   @default(pending)
+  userID      Int?                @default(2)
+  zScore      Float?              @db.Float
+  keywords    String?             @db.Text
+  orderID     Int?
+  dataRoute   Int?                @db.TinyInt
+  cost        Float?              @db.Float
+  money       String?             @db.VarChar(20)
+  isESstatus  Boolean?            @default(false)
+  username    String              @db.VarChar(11)
+  depart_pos  String              @db.VarChar(11)
+  unitType    Boolean             @default(false)
+  inout_str   String              @db.VarChar(50)
+
+  @@index([categoryID], map: "categoryID")
+  @@index([title], map: "title")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model data_info_kcc {
+  id          Int                    @id @default(autoincrement())
+  title       String                 @db.VarChar(255)
+  publisher   String                 @db.VarChar(255)
+  publishYear Int?
+  note        String                 @db.Text
+  cencerID    String                 @db.VarChar(255)
+  author      String                 @db.VarChar(255)
+  pages       Int
+  classID     data_info_kcc_classID  @default(public)
+  categoryID  Int
+  fileName    String                 @db.VarChar(255)
+  fileType    data_info_kcc_fileType
+  fileSize    BigInt                 @default(0)
+  langID      Int                    @default(1) @db.TinyInt
+  sha512      String?                @db.VarChar(255)
+  insertTime  DateTime               @db.DateTime(0)
+  processTime DateTime?              @db.DateTime(0)
+  likerIDs    String                 @db.Text
+  likeCount   Int                    @default(0)
+  unlikerIDs  String                 @db.Text
+  unlikeCount Int                    @default(0)
+  viewCount   Int                    @default(0)
+  isRecomm    Int                    @default(0) @db.TinyInt
+  status      data_info_kcc_status   @default(pending)
+  userID      Int                    @default(2)
+  zScore      Float                  @db.Float
+  keywords    String                 @db.Text
+  orderID     Int
+  dataRoute   Int                    @db.TinyInt
+  cost        Float                  @db.Float
+  money       String                 @db.VarChar(20)
+
+  @@index([categoryID], map: "categoryID")
+  @@index([title], map: "title")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model data_order {
+  id         BigInt            @id @default(autoincrement())
+  note       String?           @db.VarChar(500)
+  userID     Int
+  status     data_order_status @default(pending)
+  insertTime DateTime          @db.DateTime(0)
+  dataIDs    String?           @db.VarChar(255)
+
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model data_recording {
+  id             Int       @id @default(autoincrement())
+  userID         Int?
+  para_id        Int?
+  recording_time Float?    @db.Float
+  departID       Int?
+  userName       String?   @db.VarChar(11)
+  regDate        DateTime? @db.Date
+  state          Boolean?  @default(false)
+  comment        String?   @db.VarChar(255)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model data_recording_text {
+  id        Int?    @unique(map: "id")
+  paragraph String? @db.Text
+
+  @@ignore
+}
+
+model doc_xml {
+  id      Int    @id @default(autoincrement())
+  docID   Int
+  xmlData String @db.Text
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model forum_info {
+  id               Int                @id @default(autoincrement())
+  parentID         Int                @default(0)
+  title            String             @db.VarChar(255)
+  note             String             @db.Text
+  classID          forum_info_classID @default(public)
+  categoryID       Int                @default(0)
+  fileName         String             @db.VarChar(255)
+  insertTime       DateTime           @db.DateTime(0)
+  processTime      DateTime?          @db.DateTime(0)
+  viewCount        Int                @default(0) @db.UnsignedSmallInt
+  likerIDs         String             @db.Text
+  likeCount        Int                @default(0) @db.UnsignedSmallInt
+  unlikerIDs       String             @db.Text
+  unlikeCount      Int                @default(0) @db.UnsignedSmallInt
+  fileSize         Int                @default(0)
+  answerCount      Int                @default(0)
+  status           forum_info_status  @default(pending)
+  userID           Int                @default(2)
+  serialParentID   Int                @default(0)
+  zScore           Float              @default(0)
+  isRecomm         Boolean            @default(false)
+  isCorrectAnswer  Boolean?
+  answerLimitCount Int?
+  isOpenForum      Boolean?
+  forumOpenTime    DateTime?          @db.DateTime(0)
+  forumCloseTime   DateTime?          @db.DateTime(0)
+  username         String             @db.VarChar(20)
+  depart_pos       String             @db.VarChar(50)
+  unitType         Boolean            @default(false)
+  inout_str        String             @db.VarChar(50)
+  isESstatus       Boolean?           @default(false)
+  tagIDs           String             @db.VarChar(255)
+  tags             String             @db.VarChar(255)
+  mentionAnswerID  Int                @default(0)
+
+  @@index([categoryID], map: "categoryID")
+  @@index([parentID], map: "parentID")
+  @@index([serialParentID], map: "serialParentID")
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model internet_comment {
+  id         Int       @id @default(autoincrement())
+  internetID Int?
+  userID     Int?
+  note       String?   @db.Text
+  insertTime DateTime? @db.DateTime(0)
+  status     String?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model internet_info {
+  id             Int                    @id @default(autoincrement())
+  title          String                 @db.VarChar(255)
+  note           String                 @db.Text
+  categoryID     Int
+  dataCategoryID Int
+  fileType       internet_info_fileType
+  fileSize       String                 @default("0") @db.VarChar(11)
+  langID         Int                    @default(1) @db.TinyInt
+  viewCount      Int                    @default(0)
+  keywords       String                 @db.Text
+  dataRoute      String                 @db.VarChar(255)
+  cost           String                 @db.VarChar(50)
+  allow          internet_info_allow
+  status         internet_info_status
+  public         internet_info_public
+  insertTime     DateTime               @db.Date
+
+  @@index([categoryID], map: "categoryID")
+  @@index([title], map: "title")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_article {
+  id           Int      @id @default(autoincrement())
+  articleID    Int
+  userID       Int
+  lastViewDate DateTime @db.DateTime(0)
+  viewCount    Int
+  ip           String   @db.VarChar(20)
+
+  @@index([articleID], map: "postID")
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_evaluation {
+  id          Int @id @default(autoincrement())
+  user_id     Int
+  category_id Int
+  value       Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_forum {
+  id           Int      @id @default(autoincrement())
+  forumID      Int
+  userID       Int
+  lastViewDate DateTime @db.DateTime(0)
+  viewCount    Int
+  ip           String   @db.VarChar(20)
+
+  @@index([forumID], map: "postID")
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_inout {
+  id       BigInt    @id @default(autoincrement())
+  title    String?   @db.VarChar(55)
+  userID   Int?
+  dataCnt  Int
+  forumCnt Int
+  regDate  DateTime? @db.DateTime(0)
+  type     Boolean?  @default(true)
+}
+
+model log_labour {
+  id       Int      @id @default(autoincrement())
+  ip       String   @db.VarChar(20)
+  departID Int
+  posID    Int
+  name     String   @db.VarChar(40)
+  date     DateTime @db.Date
+  pages    Int
+  p1       Int      @db.TinyInt
+  p2       Int      @db.TinyInt
+  p3       Int      @db.TinyInt
+  p4       Int      @db.TinyInt
+  p5       Int      @db.TinyInt
+  p6       Int      @db.TinyInt
+  p7       Int      @db.TinyInt
+  p8       Int      @db.TinyInt
+  p9       Int      @db.TinyInt
+  p10      Int      @db.TinyInt
+  p11      Int      @db.TinyInt
+  p12      Int      @db.TinyInt
+  p13      Int      @db.TinyInt
+  p14      Int      @db.TinyInt
+  p15      Int      @db.TinyInt
+  p16      Int      @db.TinyInt
+  p17      Int      @db.TinyInt
+  p18      Int      @db.TinyInt
+  p19      Int      @db.TinyInt
+  p20      Int      @db.TinyInt
+  p21      Int      @db.TinyInt
+  p22      Int      @db.TinyInt
+  p23      Int      @db.TinyInt
+  p24      Int      @db.TinyInt
+}
+
+model log_login {
+  id      BigInt @id @default(autoincrement())
+  logTime BigInt
+  logCnt  Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_message {
+  id         Int       @id @default(autoincrement())
+  senderID   Int
+  receiverID Int
+  groupName  String    @db.VarChar(50)
+  message    String    @db.Text
+  sendTime   DateTime  @db.DateTime(0)
+  readTime   DateTime? @db.DateTime(0)
+  delCheck   Int       @default(0) @db.TinyInt
+  fileName   String    @db.VarChar(256)
+  saveName   String    @db.VarChar(256)
+  fileSize   Int       @db.MediumInt
+
+  @@index([receiverID], map: "receiverID")
+  @@index([senderID], map: "senderID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_notice {
+  id           BigInt    @id @default(autoincrement())
+  noticeID     Int
+  userID       Int
+  lastViewDate DateTime? @db.DateTime(0)
+  ip           String?   @db.VarChar(60)
+
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_success {
+  id           Int      @id @default(autoincrement())
+  successID    Int
+  userID       Int
+  lastViewDate DateTime @db.DateTime(0)
+  viewCount    Int
+  ip           String   @db.VarChar(20)
+
+  @@index([successID], map: "postID")
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model notice_info {
+  id         Int                @id @default(autoincrement())
+  title      String             @db.VarChar(256)
+  note       String             @db.Text
+  fileName   String             @db.VarChar(128)
+  insertTime DateTime?          @default(now()) @db.Timestamp(0)
+  status     notice_info_status @default(normal)
+}
+
+model online_exam_answer {
+  id     Int     @id @default(autoincrement())
+  examID Int
+  answer String  @db.Text
+  grade  Decimal @db.Decimal(10, 0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model online_exam_category {
+  id          BigInt  @id @default(autoincrement())
+  name        String  @db.VarChar(255)
+  parentID    Int     @default(0)
+  examCount   Int     @default(10)
+  markingType Int?
+  passMark    Float?  @db.Float
+  isImmeMark  Int     @default(1) @db.SmallInt
+  sort        Int     @default(0)
+  description String  @db.Text
+  reexamdate  Int     @default(20) @db.SmallInt
+  isShow      Int     @default(0) @db.TinyInt
+  managers    String  @db.Text
+  markers     String? @db.Text
+  icon        String  @default("fontello-icon-list-3") @db.VarChar(50)
+  treeCode    String  @db.VarChar(200)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model online_exam_history {
+  id         Int       @id @default(autoincrement())
+  examSTRID  String?   @db.VarChar(256)
+  userID     Int
+  examID     Int       @default(0)
+  startTime  DateTime? @db.DateTime(0)
+  solvedTime DateTime? @db.DateTime(0)
+  categoryID Int       @default(0)
+  answerStr  String?   @db.Text
+  mark       Float?    @db.Float
+  marker     String    @default("system") @db.VarChar(255)
+
+  @@index([categoryID], map: "categoryID")
+  @@index([examID], map: "examID")
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model online_exam_list {
+  id               BigInt    @id @default(autoincrement())
+  categoryID       Int
+  name             String    @db.Text
+  question         String    @db.Text
+  aCount           Int       @db.TinyInt
+  examType         String    @db.VarChar(16)
+  timeLimit        Int       @db.SmallInt
+  marks            Decimal?  @db.Decimal(10, 0)
+  adminComment     String?   @db.Text
+  status           Int
+  insertDate       DateTime  @default(now()) @db.Timestamp(0)
+  updateDate       DateTime? @db.DateTime(0)
+  creater          String    @db.VarChar(255)
+  userID           String    @db.VarChar(255)
+  attachedFile     String    @db.VarChar(255)
+  attachedFileName String    @db.VarChar(255)
+
+  @@index([categoryID], map: "categoryID")
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model online_exam_mark {
+  id          Int       @id @default(autoincrement())
+  userID      Int?
+  examSTRID   String    @db.VarChar(256)
+  mark        Float?    @db.Float
+  examDate    DateTime? @db.DateTime(0)
+  examEndDate DateTime? @db.DateTime(0)
+  categoryID  Int?
+  examIDStr   String    @db.VarChar(255)
+  currentEID  Int       @default(0)
+  examFlag    Int       @default(0) @db.TinyInt
+  isMarking   Int       @default(1) @db.SmallInt
+  ip          String?   @db.VarChar(255)
+  marker      String    @default("system") @db.VarChar(255)
+
+  @@index([categoryID], map: "categoryID")
+  @@index([userID], map: "userID")
+}
+
+model online_exam_match_subquestioin {
+  id          BigInt @id @default(autoincrement())
+  examID      BigInt
+  subQuestion String @db.Text
+  subAnswer   String @db.Text
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model opinion_info {
+  id          Int                 @id @default(autoincrement())
+  userName    String              @default("Anonymous") @db.VarChar(255)
+  title       String              @db.VarChar(255)
+  note        String              @db.VarChar(1024)
+  insertTime  DateTime            @db.DateTime(0)
+  processTime DateTime?           @db.DateTime(0)
+  answer      String              @db.VarChar(1024)
+  status      opinion_info_status @default(pending)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model overseas_data_order {
+  id                BigInt                                @id @default(autoincrement())
+  note              String                                @db.VarChar(1500)
+  userID            Int
+  status            overseas_data_order_status            @default(pending)
+  viewCount         Int
+  dataIDs           String                                @db.VarChar(765)
+  category          overseas_data_order_category          @default(book)
+  title             String                                @db.VarChar(100)
+  taskName          String                                @db.VarChar(100)
+  origin            String                                @db.VarChar(100)
+  price             Int
+  monetaryUnit      overseas_data_order_monetaryUnit      @default(USD)
+  suspendDepart     overseas_data_order_suspendDepart?    @default(science)
+  comment           String                                @db.VarChar(100)
+  insertTime        DateTime?                             @db.DateTime(0)
+  passTime          DateTime?                             @db.DateTime(0)
+  approveTime       DateTime?                             @db.DateTime(0)
+  waitingTime       DateTime?                             @db.DateTime(0)
+  endTime           DateTime?                             @db.DateTime(0)
+  suspendTime       DateTime?                             @db.DateTime(0)
+  rejectTime        DateTime?                             @db.DateTime(0)
+  processTime       DateTime?                             @db.DateTime(0)
+  feedback          String?                               @db.VarChar(1500)
+  rating            Int?
+  real_price        Int?
+  real_monetaryUnit overseas_data_order_real_monetaryUnit @default(USD)
+  r_statement       String?                               @db.VarChar(1500)
+  r_userid          Int?
+
+  @@index([userID], map: "userID")
+}
+
+model politic_info {
+  id         Int    @id @default(autoincrement())
+  title      String @db.VarChar(255)
+  categoryID Int
+  fileName   String @db.VarChar(255)
+  isShow     Int    @db.TinyInt
+  volume     Int
+  saveName   String @db.VarChar(255)
+  sortID     Int
+  sort       Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model private_data_info {
+  id         Int      @id @default(autoincrement())
+  title      String   @db.VarChar(255)
+  note       String   @db.Text
+  pages      Int
+  location   String   @db.VarChar(255)
+  categoryID Int
+  fileType   String   @db.VarChar(11)
+  langID     Int      @default(1) @db.TinyInt
+  insertTime DateTime @db.DateTime(0)
+  capacity   String   @db.VarChar(11)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model private_data_list {
+  id         Int                        @id @default(autoincrement())
+  data_id    Int                        @default(0)
+  title      String                     @db.VarChar(255)
+  note       String                     @db.Text
+  categoryID Int                        @default(0)
+  fileType   private_data_list_fileType @default(document)
+  postTime   DateTime                   @db.DateTime(0)
+  insertTime DateTime                   @db.DateTime(0)
+  dataID     String                     @db.VarChar(255)
+
+  @@index([categoryID], map: "categoryID")
+  @@index([dataID], map: "dataID")
+}
+
+model rating_info {
+  id         Int      @id @default(autoincrement())
+  userID     Int
+  dataID     Int
+  comment    String   @db.Text
+  rating     Int
+  insertDate DateTime @db.Date
+  status     Int      @db.TinyInt
+}
+
+model report_info {
+  id          Int      @id @default(autoincrement())
+  userID      Int
+  insertTime  DateTime @db.DateTime(0)
+  managerID   Int
+  report      String   @db.VarChar(1024)
+  state       String   @db.VarChar(15)
+  signature   String   @db.VarChar(255)
+  comment     String   @db.VarChar(1024)
+  updateTime  DateTime @db.DateTime(0)
+  processTime DateTime @db.DateTime(0)
+  saveFile    String   @db.VarChar(255)
+  phone_num   String   @db.VarChar(31)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model science_check {
+  id            Int      @id @default(autoincrement())
+  departID      Int
+  checkDate     DateTime @db.DateTime(0)
+  checkFlag     String   @default("0") @db.VarChar(20)
+  checkUser     Int
+  empCount      Int      @default(0)
+  publicNetCnt  Int      @default(0)
+  privateNetCnt Int      @default(0)
+
+  @@index([departID], map: "departID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model science_item {
+  id        Int     @id @default(autoincrement())
+  name      String  @db.VarChar(50)
+  unit      String  @db.VarChar(10)
+  deletable Boolean @default(true)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model science_plan {
+  id         Int                    @id @default(autoincrement())
+  userID     Int?
+  date       DateTime?              @db.Date
+  itemID     Int?
+  content    String?                @db.VarChar(255)
+  planVal    String?                @db.VarChar(50)
+  finishFlag Int                    @default(0) @db.TinyInt
+  comment    String                 @db.Text
+  details    String                 @db.VarChar(500)
+  performVal Float                  @default(0) @db.Float
+  optType    Int
+  attendant  Int                    @db.TinyInt
+  permDate   DateTime               @db.Date
+  audience   science_plan_audience? @default(team)
+
+  @@index([itemID], map: "itemID")
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model search_keyword {
+  id          Int                       @id @default(autoincrement())
+  keyword     String                    @db.VarChar(255)
+  insertTime  DateTime                  @db.DateTime(0)
+  userID      Int
+  userIP      String                    @db.Char(16)
+  resultCount Int
+  searchCount Int
+  searchType  search_keyword_searchType @default(data)
+
+  @@index([userID], map: "userID")
+}
+
+model session_info {
+  id         String @id @db.VarChar(128)
+  ip_address String @db.VarChar(45)
+  timestamp  Int    @default(0) @db.UnsignedInt
+  data       Bytes  @db.Blob
+
+  @@index([timestamp], map: "sessions_timestamp")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model success_info {
+  id             Int       @id @default(autoincrement())
+  userID         Int?
+  title          String?   @db.Text
+  description    String?   @db.Text
+  content        String?   @db.Text
+  categoryID     Int?
+  fileName       String?   @db.VarChar(127)
+  fileSize       Int?
+  viewCount      Int?
+  ratingCount    Int?
+  avgRating      Float?    @db.Float
+  status         String?
+  insertTime     DateTime? @db.DateTime(0)
+  processTime    DateTime? @db.DateTime(0)
+  serialParentID Int?
+  keyword        String?   @db.Text
+  isESstatus     Boolean?  @default(false)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model success_rating {
+  id         Int       @id @default(autoincrement())
+  successID  Int?
+  userID     Int?
+  rating     Float?    @db.Float
+  note       String?   @db.Text
+  insertTime DateTime? @db.DateTime(0)
+  status     String?
+}
+
+model tbl_captcha {
+  id          Int    @id @default(autoincrement())
+  accessIP    String @db.VarChar(20)
+  captchaCode String @db.VarChar(20)
+  regDate     Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model template_log_access {
+  id         Int      @id @default(autoincrement())
+  accessUrl  String   @db.Text
+  agent      String   @db.VarChar(255)
+  accessIP   String   @db.VarChar(16)
+  accessTime DateTime @db.DateTime(0)
+  userName   String   @db.VarChar(20)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model template_log_data {
+  id           Int                        @id @default(autoincrement())
+  dataID       Int
+  title        String                     @db.VarChar(255)
+  langID       Int                        @db.TinyInt
+  categoryID   Int                        @db.SmallInt
+  fileType     template_log_data_fileType
+  userID       Int
+  userName     String                     @db.VarChar(10)
+  userPos      String                     @db.VarChar(30)
+  userDepart   String                     @db.VarChar(30)
+  tViewTime    Int
+  lastViewTime DateTime                   @db.DateTime(0)
+  accessIP     String                     @default("0.0.0.0") @db.VarChar(20)
+
+  @@index([categoryID], map: "dataCategoryID")
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model template_log_manager {
+  id         BigInt   @id @default(autoincrement())
+  note       String   @db.VarChar(255)
+  userID     Int
+  userName   String   @db.VarChar(50)
+  userDepart String   @db.VarChar(30)
+  userPos    String   @db.VarChar(30)
+  accessIP   String   @db.VarChar(20)
+  accessTime DateTime @db.DateTime(0)
+
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model template_log_privatedata {
+  id           Int                               @id @default(autoincrement())
+  dataID       Int
+  title        String                            @db.VarChar(255)
+  langID       Int                               @db.TinyInt
+  categoryID   Int                               @db.SmallInt
+  fileType     template_log_privatedata_fileType
+  userID       Int
+  userName     String                            @db.VarChar(10)
+  userPos      String                            @db.VarChar(30)
+  userDepart   String                            @db.VarChar(30)
+  tViewTime    Int
+  lastViewTime DateTime                          @db.DateTime(0)
+  accessIP     String                            @default("0.0.0.0") @db.VarChar(20)
+  classID      template_log_privatedata_classID
+
+  @@index([categoryID], map: "dataCategoryID")
+  @@index([userID], map: "userID")
+}
+
+model template_log_user {
+  id         BigInt   @id @default(autoincrement())
+  note       String   @db.VarChar(255)
+  userID     BigInt
+  userName   String   @db.VarChar(30)
+  userPos    String   @db.VarChar(30)
+  userDepart String   @db.VarChar(30)
+  accessIP   String   @db.VarChar(30)
+  accessTime DateTime @db.DateTime(0)
+
+  @@index([userID], map: "userID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_info {
+  id                BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  isAdmin           Boolean          @default(false)
+  isLibrarian       Int              @db.TinyInt
+  userIP            String           @default("") @db.VarChar(40)
+  userName          String           @unique(map: "userName") @default("") @db.VarChar(255)
+  cNum              String           @db.VarChar(20)
+  flag              Int              @default(0) @db.TinyInt
+  phoneNum1         String           @db.VarChar(12)
+  phoneNum2         String           @db.VarChar(12)
+  password          String           @default("") @db.VarChar(255)
+  characterID       Int              @default(1)
+  regDate           DateTime         @db.DateTime(0)
+  departID          Int
+  posID             Int
+  birthday          DateTime         @db.Date
+  status            user_info_status @default(pending)
+  favIDs            String           @db.VarChar(100)
+  favForumIDs       String           @db.VarChar(255)
+  favArticleIDs     String           @db.VarChar(255)
+  lastAction        DateTime         @db.DateTime(0)
+  isLogin           Boolean          @default(false)
+  pwd_date          DateTime         @default(dbgenerated("'2020-06-01'")) @db.Date
+  theme             String?          @default("theme1")
+  internetFlag      Int              @db.TinyInt
+  iasID             String           @db.VarChar(20)
+  studyGroup        Int              @db.TinyInt
+  OrganizationGroup Int              @db.TinyInt
+  followCatIDs      String           @db.VarChar(255)
+  accessIPs         String?          @db.VarChar(255)
+  followUserIDs     String           @db.VarChar(10000)
+  textIDs           String           @db.Text
+  totalMarks        Float?           @default(0) @db.Float
+  weekMarks         Float?           @default(0) @db.Float
+  settings          String           @default("show_unread_cnt:1,reply_real_notification:1,message_real_notification:1,publish_favor_cat:0,show_role:0,show_unread_forum:1,show_opened_forum:1,infinite_scroll:0") @db.VarChar(255)
+  apply_pdata_ids   String           @db.Text
+
+  @@index([departID], map: "departID")
+  @@index([isAdmin], map: "userType")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_permission {
+  id                  Int                     @id @default(autoincrement())
+  userID              Int
+  classID             user_permission_classID @default(public)
+  forumPermission     String                  @db.Text
+  dataPermission      String                  @db.Text
+  systemPermission    String                  @db.Text
+  successPermission   String                  @db.VarChar(255)
+  forumPostPermission Boolean?                @default(false)
+  overseasPermission  String?                 @default("user:NULL,admin:NULL") @db.VarChar(255)
+  privatePermission   Boolean?                @default(false)
+
+  @@index([userID], map: "userID")
+}
+
+enum basic_position_workType {
+  officer
+  engineer
+  worker
+}
+
+enum basic_sys_modules_moduleType {
+  ucp
+  acp
+  fcp
+}
+
+enum user_permission_classID {
+  public
+  private
+}
+
+enum apply_privatedata_info_status {
+  pending
+  approved
+  suspended
+  finished
+}
+
+enum book_lend_log_langID {
+  ko
+  cn
+  en
+  jp
+  ru
+  du
+}
+
+enum data_order_status {
+  pending
+  approved
+  suspended
+}
+
+enum overseas_data_order_status {
+  pending
+  approved
+  suspended
+  waiting
+  passed
+  end
+  rejected
+}
+
+enum article_info_classID {
+  public
+  private
+  common
+}
+
+enum basic_data_category_classID {
+  public
+  private
+}
+
+enum basic_success_category_classID {
+  public
+  private
+}
+
+enum cron_top_user_rankType {
+  data
+  forum
+}
+
+enum forum_info_classID {
+  public
+  private
+  common
+}
+
+enum basic_forum_tag_status {
+  pending
+  approved
+  suspended
+  draft
+  pass
+}
+
+enum internet_info_fileType {
+  image
+  video
+  audio
+  document
+  rar
+  exe
+  other
+}
+
+enum notice_info_status {
+  show
+  hide
+  normal
+}
+
+enum private_data_list_fileType {
+  image
+  video
+  audio
+  document
+  other
+}
+
+enum template_log_data_fileType {
+  image
+  video
+  audio
+  document
+  other
+}
+
+enum template_log_privatedata_fileType {
+  image
+  video
+  audio
+  document
+  other
+}
+
+enum basic_forum_category_classID {
+  public
+  private
+}
+
+enum basic_sys_modules_status {
+  show
+  hide
+}
+
+enum overseas_data_order_category {
+  book
+  periodicals
+  standard
+  source
+  execution
+}
+
+enum basic_department_classID {
+  public
+  private
+}
+
+enum opinion_info_status {
+  processed
+  pending
+  suspended
+  inprocess
+}
+
+enum search_keyword_searchType {
+  data
+  forum
+  total
+}
+
+enum book_info_org_langID {
+  ko
+  cn
+  en
+  jp
+  ru
+  du
+}
+
+enum data_info_classID {
+  public
+  private
+}
+
+enum data_info_kcc_classID {
+  public
+  private
+}
+
+enum book_info_langID {
+  ko
+  cn
+  en
+  jp
+  ru
+  du
+}
+
+enum data_info_fileType {
+  image
+  video
+  audio
+  document
+  other
+}
+
+enum data_info_kcc_fileType {
+  image
+  video
+  audio
+  document
+  other
+}
+
+enum overseas_data_order_monetaryUnit {
+  USD
+  EUR
+  GBP
+  CNY
+  JPY
+  RUB
+}
+
+enum book_info_org_showFlag {
+  show
+  hide
+}
+
+enum internet_info_allow {
+  test
+  crack
+  allow
+}
+
+enum overseas_data_order_suspendDepart {
+  science
+  overseas
+  spreader
+}
+
+enum book_info_showFlag {
+  show
+  hide
+}
+
+enum internet_info_status {
+  pending
+  approved
+}
+
+enum science_plan_audience {
+  bureau
+  institute
+  team
+}
+
+enum template_log_privatedata_classID {
+  private
+  public
+}
+
+enum internet_info_public {
+  public
+  private
+}
+
+enum user_info_status {
+  pending
+  approved
+  suspended
+  retired
+}
+
+enum article_info_status {
+  pending
+  approved
+  suspended
+  draft
+  pass
+}
+
+enum forum_info_status {
+  pending
+  approved
+  suspended
+  draft
+  pass
+}
+
+enum data_info_status {
+  pending
+  approved
+  suspended
+  pass
+}
+
+enum data_info_kcc_status {
+  pending
+  approved
+  suspended
+  pass
+}
+
+enum overseas_data_order_real_monetaryUnit {
+  USD
+  EUR
+  GBP
+  CNY
+  JPY
+  RUB
+}
