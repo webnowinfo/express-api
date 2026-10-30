@@ -1,0 +1,520 @@
+// Prisma schema for the science_db database (introspected with `prisma db pull`).
+// Generates a separate client into node_modules/.prisma-science (a dot-folder, like Prisma's own
+// .prisma/client, so yarn does not prune it), imported from '.prisma-science/client'.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/.prisma-science/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL_SCIENCE")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_data_route {
+  id        Int                         @id @default(autoincrement())
+  name      String                      @db.VarChar(255)
+  langID    Int
+  status    Int                         @default(1)
+  person    Int?
+  isPrivate basic_data_route_isPrivate?
+  isSite    basic_data_route_isSite?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_item {
+  id       Int                  @id @default(autoincrement())
+  item     String?              @db.VarChar(150)
+  unit     Bytes?               @db.VarBinary(100)
+  writable Int                  @db.TinyInt
+  isDelete basic_item_isDelete?
+}
+
+model basic_modules {
+  id          Int                      @id @default(autoincrement())
+  module_name String?                  @db.VarChar(200)
+  module_path String?                  @db.VarChar(255)
+  treeCode    String?                  @db.VarChar(200)
+  parent_id   Int?
+  show_flag   basic_modules_show_flag? @default(yes)
+  icon        String?                  @db.VarChar(100)
+}
+
+model basic_partdivision {
+  id               Int    @id @default(autoincrement())
+  main_data_part   String @db.Text
+  extra_data_part  String @db.Text
+  main_forum_part  String @db.Text
+  extra_forum_part String @db.Text
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model basic_spread_method {
+  id     BigInt @id @default(autoincrement())
+  method String @db.VarChar(256)
+}
+
+model basic_view_range {
+  id         Int                         @id @default(autoincrement())
+  perm_type  basic_view_range_perm_type?
+  module_ids String?                     @db.Text
+}
+
+model bureau_decoration {
+  id         Int     @id @default(autoincrement())
+  depart_id  Int?
+  level      Int?
+  empCnt     Int?
+  indCnt     Int?
+  otherCnt   Int?
+  square     Int?
+  netStatus  Int?
+  compCnt    Int?
+  projCnt    Int?
+  IdcCnt     Int?
+  extraCnt   Int?
+  bookCnt    Int?
+  deskCnt    Int?
+  chairCnt   Int?
+  smallCnt   Int?
+  power      String? @db.Text
+  heat       String? @db.Text
+  comment    String? @db.Text
+  created_at String? @db.VarChar(200)
+}
+
+model bureau_members {
+  id              Int                       @id @default(autoincrement())
+  user_id         Int?
+  perm_type       bureau_members_perm_type?
+  view_depart_ids String?                   @db.Text
+  gender          bureau_members_gender?
+  party           bureau_members_party?
+  tec_type        bureau_members_tec_type?
+  tec_level       Int?
+  school          String?                   @db.VarChar(250)
+  capacity        bureau_members_capacity?
+  comment         String?                   @db.Text
+  flag            bureau_members_flag
+  in_date         DateTime?                 @db.Date
+  out_date        DateTime?                 @db.Date
+  equ_ip          String?                   @db.VarChar(255)
+  equ_mac         String?                   @db.VarChar(255)
+}
+
+model notebook_lesson {
+  id         Int     @id @default(autoincrement())
+  created_at String? @db.VarChar(200)
+  depart_ids String? @db.Text
+  text_cnt   Int?
+  lesson_cnt Int?
+}
+
+model notebook_scidata {
+  id          Int     @id @default(autoincrement())
+  korean_cnt  Int?
+  foreign_cnt Int?
+  program_cnt Int?
+  year_item   Int?
+  month_item  Int?
+  depart_ids  String? @db.Text
+  locker      Int?    @default(-1)
+  media_cnt   Int?
+  other_cnt   Int?
+  article_cnt Int?
+  success_cnt Int?
+  tech_cnt    Int?
+  system_name String? @db.VarChar(255)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model reed_student {
+  id              Int                  @id @default(autoincrement())
+  user_id         Int?
+  gender          reed_student_gender?
+  party           reed_student_party?
+  branch          String?              @db.VarChar(200)
+  enter_date      DateTime?            @db.Date
+  leave_date      DateTime?            @db.Date
+  status          reed_student_status? @default(running)
+  note            String?              @db.Text
+  total_terms     Int?                 @default(8)
+  grade           Int?                 @default(1)
+  total_subjects  Int?                 @default(0)
+  passed_subjects Int                  @default(0)
+  univ_id         Int?
+}
+
+model reed_university {
+  id        Int     @id @default(autoincrement())
+  univ_name String? @db.VarChar(200)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model room_comlist {
+  id          Int       @id @default(autoincrement())
+  name        String?   @db.VarChar(200)
+  device_type String?   @db.VarChar(200)
+  device_num  Int?
+  reg_date    DateTime? @default(dbgenerated("'2000-01-01'")) @db.Date
+  manager     String?   @db.VarChar(200)
+  reg_depart  String?   @db.VarChar(200)
+  comment     String?   @db.Text
+  usable      Boolean?  @default(false)
+}
+
+model room_operator {
+  id      Int  @id @default(autoincrement())
+  user_id Int?
+}
+
+model room_person {
+  id        Int                    @id @default(autoincrement())
+  room_type room_person_room_type?
+  person    Int?
+  is_charge room_person_is_charge?
+}
+
+model room_plan {
+  id         Int     @id @default(autoincrement())
+  year       String? @db.VarChar(200)
+  week_index Int?
+  content    String? @db.Text
+  units      String? @db.Text
+  execution  String? @db.Text
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model room_review {
+  id          Int      @id @default(autoincrement())
+  date        DateTime @db.Date
+  conference  String   @db.VarChar(255)
+  participant Int
+  place       String   @db.VarChar(255)
+  report      String   @db.VarChar(255)
+  organize    String   @db.VarChar(255)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model room_rundoc {
+  id              BigInt   @id @default(autoincrement())
+  depart_id       BigInt
+  sub_depart_name String?  @db.VarChar(256)
+  created_at      DateTime @db.Date
+  method_id       BigInt
+  run_content     String   @db.Text
+  run_period      BigInt
+  comment         String   @db.Text
+}
+
+model room_runplan {
+  id         Int       @id @default(autoincrement())
+  year_item  Int?
+  month_item Int?
+  depart_id  Int?
+  content    String?   @db.Text
+  net_type   String?   @db.Text
+  plan_date  DateTime? @db.Date
+  user_state String?   @db.Text
+  plan_state String?   @db.Text
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model room_runstate {
+  id        Int       @id @default(autoincrement())
+  user_id   Int?
+  date      DateTime? @db.Date
+  route_id  Int?
+  use_type  Int?
+  cnt       Int?
+  demand    String?   @db.VarChar(255)
+  pay_type  Int?      @default(0)
+  cost      Float?    @db.Float
+  view_time Float?    @db.Float
+}
+
+model session_info {
+  id         String @id @db.VarChar(128)
+  ip_address String @db.VarChar(45)
+  timestamp  Int    @default(0) @db.UnsignedInt
+  data       Bytes  @db.Blob
+
+  @@index([timestamp], map: "sessions_timestamp")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model state_advanced_construct {
+  id          Int       @id @default(autoincrement())
+  user_id     Int?
+  title       String?   @db.VarChar(100)
+  origin_id   Int?
+  category    String?   @db.VarChar(100)
+  data_count  Int?
+  data_amount Int?
+  insert_time DateTime? @db.Date
+  refer_note  String?   @db.VarChar(255)
+}
+
+model state_collection_abroad {
+  id         Int                           @id @default(autoincrement())
+  departID   Int?
+  created_at DateTime?                     @db.Date
+  routeID    Int?
+  eBookKinds Int?
+  eBookCnt   Int?
+  eMagKinds  Int?
+  eMagCnt    Int?
+  eVideoCnt  Int?
+  eProgCnt   Int?
+  tBookKinds Int?
+  tBookCnt   Int?
+  tMagKinds  Int?
+  tMagCnt    Int?
+  note       state_collection_abroad_note?
+  routeName  String?                       @db.VarChar(100)
+  departName String?                       @db.VarChar(100)
+}
+
+model state_collection_interior {
+  id            Int                             @id @default(autoincrement())
+  departID      Int?
+  created_at    DateTime?                       @db.Date
+  routeID       Int?
+  korEDataCnt   Int?
+  korBookletCnt Int?
+  korMagCnt     Int?
+  korVideoCnt   Int?
+  korProgCnt    Int?
+  forEDataCnt   Int?
+  forBookletCnt Int?
+  forMagCnt     Int?
+  forVideoCnt   Int?
+  forProgCnt    Int?
+  note          state_collection_interior_note?
+  departName    String?                         @db.VarChar(100)
+  routeName     Bytes?                          @db.VarBinary(100)
+}
+
+model state_exam_mark {
+  id          Int     @id @default(autoincrement())
+  examlist_id Int?
+  user_id     Int?
+  mark        String? @db.VarChar(200)
+}
+
+model state_examlist {
+  id        Int       @id @default(autoincrement())
+  depart_id Int?
+  exam_name String?   @db.VarChar(255)
+  user_ids  String?   @db.Text
+  exam_time DateTime? @db.Date
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model state_extra_construct {
+  id            Int                        @id @default(autoincrement())
+  departID      Int?
+  created_at    DateTime?                  @db.Date
+  routeID       Int?
+  korEDataCnt   Int?
+  korBookletCnt Int?
+  korMagCnt     Int?
+  forEDataCnt   Int?
+  forBookletCnt Int?
+  forMagCnt     Int?
+  note          state_extra_construct_note @default(global)
+  departName    String?                    @db.VarChar(100)
+  routeName     Bytes?                     @db.VarBinary(100)
+}
+
+model state_organization {
+  id         Int       @id @default(autoincrement())
+  depart_id  Int?
+  created_at DateTime? @db.Date
+  content    String?   @db.Text
+}
+
+model state_spread_dataview {
+  id              Int       @id @default(autoincrement())
+  depart_id       Int?
+  site_id         Int?
+  in_visitor_cnt  Int?      @default(0)
+  in_data_cnt     Int?      @default(0)
+  out_visitor_cnt Int?      @default(0)
+  out_data_cnt    Int?      @default(0)
+  created_at      DateTime? @db.Date
+}
+
+model state_spread_presentation {
+  id               Int       @id @default(autoincrement())
+  depart_id        Int?
+  name             String?   @db.VarChar(255)
+  created_at       DateTime? @db.Date
+  place            String?   @db.VarChar(255)
+  in_user_cnt      Int?
+  rel_user_cnt     Int?
+  product_type_cnt Int?
+  mark             Float?    @db.Float
+  pres_cnt         Int?
+  comment          String?   @db.Text
+}
+
+model state_spread_publication {
+  id          Int                            @id @default(autoincrement())
+  spread_unit String?                        @db.VarChar(200)
+  name        String?                        @db.VarChar(200)
+  size        String?                        @db.VarChar(200)
+  type        state_spread_publication_type?
+  less_unit   String?                        @db.Text
+  created_at  DateTime?                      @db.Date
+}
+
+model state_spread_siteview {
+  id          Int       @id @default(autoincrement())
+  depart_id   Int?
+  site_id     Int?
+  forum_cnt   Int?
+  exp_cnt     Int?
+  product_cnt Int?
+  created_at  DateTime? @db.Date
+}
+
+model state_success_problem {
+  id         Int                         @id @default(autoincrement())
+  depart_id  Int?
+  created_at DateTime?                   @db.Date
+  type       state_success_problem_type?
+  comment    String?                     @db.Text
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model techorder_landbook {
+  id           Int       @id @default(autoincrement())
+  user_id      Int?
+  date         DateTime? @db.Date
+  note         String?   @db.VarChar(255)
+  insert_time  DateTime? @db.Date
+  approve_time DateTime? @db.Date
+  refer_note   String?   @db.VarChar(255)
+}
+
+enum basic_view_range_perm_type {
+  all
+  depart
+  special
+  org
+}
+
+enum room_person_room_type {
+  nation
+  private
+  internet
+  lesson
+}
+
+enum bureau_members_perm_type {
+  all
+  depart
+  special
+}
+
+enum reed_student_gender {
+  male
+  female
+}
+
+enum reed_student_party {
+  labour
+  worker
+  youth
+}
+
+enum room_person_is_charge {
+  yes
+  no
+}
+
+enum state_success_problem_type {
+  success
+  failure
+  problem
+  science
+  indbuild
+  newbuild
+}
+
+enum basic_item_isDelete {
+  yes
+  no
+}
+
+enum bureau_members_gender {
+  man
+  woman
+}
+
+enum state_spread_publication_type {
+  booklet
+  media
+  magazine
+}
+
+enum basic_data_route_isPrivate {
+  yes
+  no
+}
+
+enum basic_modules_show_flag {
+  yes
+  no
+}
+
+enum bureau_members_party {
+  worker
+  trade
+  youth
+}
+
+enum basic_data_route_isSite {
+  yes
+  no
+}
+
+enum bureau_members_tec_type {
+  expert
+  engineer
+  faculty
+}
+
+enum reed_student_status {
+  running
+  finish
+  quit
+}
+
+enum bureau_members_capacity {
+  official
+  spreader
+}
+
+enum state_extra_construct_note {
+  global
+  local
+}
+
+enum bureau_members_flag {
+  appoint
+  release
+}
+
+enum state_collection_abroad_note {
+  global
+  local
+}
+
+enum state_collection_interior_note {
+  global
+  local
+}
