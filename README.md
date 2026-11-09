@@ -58,7 +58,7 @@ Swagger UI.
    yarn dev
    ```
 
-   API: `http://localhost:3000/v1` · Swagger UI: `http://localhost:3000/v1/docs` (development only)
+   API status: `http://localhost:3000/v1` · Swagger UI: `http://localhost:3000/v1/docs` (development only)
    · OpenAPI JSON: `/v1/docs/openapi.json`
 
 ## Scripts

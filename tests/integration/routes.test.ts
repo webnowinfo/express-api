@@ -247,3 +247,10 @@ describe('Express 5 request handling', () => {
     );
   });
 });
+
+describe('GET /v1', () => {
+  test('reports that the API is up, without needing a token', async () => {
+    const res = await request(app).get('/v1').expect(httpStatus.OK);
+    expect(res.body).toEqual({ name: 'forum-science', status: 'ok' });
+  });
+});

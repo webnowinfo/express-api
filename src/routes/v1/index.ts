@@ -3,8 +3,18 @@ import authRoute from './auth.route';
 import userRoute from './user.route';
 import crudRoute from '../../crud/router';
 import config from '../../config/config';
+import { name } from '../../../package.json';
 
 const router = express.Router();
+
+// API root, so opening /v1 shows the API is up instead of a 404
+router.get('/', (req, res) => {
+  res.send({
+    name,
+    status: 'ok',
+    ...(config.env === 'development' && { docs: '/v1/docs' })
+  });
+});
 
 router.use('/auth', authRoute);
 router.use('/users', userRoute);
